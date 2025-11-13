@@ -5,14 +5,12 @@ import random
 
 class BlackjackPOMDP:
     """
-    Blackjack as a Partially Observable Markov Decision Process
-
     Notes:
     - Game is only 1 player and 1 dealer
     - Actions include hit or stand (can implement more later on)
     - Will consider Aces as only 1 for the sake of this project (subject to change if we decide)
     
-    POMDP aspects:
+    POMDP Part:
     - Belief state: probability distribution over remaining deck
     - Transition: depends on unknown deck composition
     - Reward: +1 win, -1 loss, 0 push (tie)
@@ -31,3 +29,54 @@ class BlackjackPOMDP:
         # Will implement more actions for complexity (double down and split)
         
         self.reset()
+
+
+    def reset(self):
+        """
+        Function: reset(self)
+
+        Purpose: Begins a new game of BlackJack
+        """
+        self.deck = self.initial_deck.copy()
+        self.player_hand = []
+        self.dealer_hand = []
+        self.game_finished = False
+
+        # Deal starting cards to player and dealer
+        self.player_hand.append(self.deal_card())
+        self.dealer_hand.append(self.deal_card())
+        self.player_hand.append(self.deal_card())
+        self.dealer_hand.append(self.deal_card())
+        
+        return f"Player hand: {self.player_hand} Dealer hand: {self.dealer_hand}"
+
+    def deal_card(self):
+        """
+        Function: deal_card(self)
+        
+        Purpose: Drawing a card from the current game deck
+        """
+        available_cards = []            # List of cards that have more than 0 count left in the deck
+        for card, count in self.deck.items():
+            if count > 0:
+                available_cards.append(card)
+
+        if len(available_cards) == 0:
+            raise ValueError("Deck has no more cards.")
+        
+        card = random.choice(available_cards)       # Choose card from deck
+        self.deck[card] -= 1                        # Reduce card count by 1 from deck
+        return card
+
+
+# TESTING
+# env = BlackjackPOMDP(num_decks=1)
+# state = env.reset()
+# print(state)
+
+# print("Player hand list:", env.player_hand)
+# print("Dealer hand list:", env.dealer_hand)
+# print("Remaining deck:", env.deck)
+
+
+
